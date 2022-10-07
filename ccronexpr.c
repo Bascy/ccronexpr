@@ -83,6 +83,12 @@ struct tm *localtime_r(const time_t *timep, struct tm *result);
 time_t _mkgmtime(struct tm* tm);
 #endif /* __MINGW32__ */
 
+#if defined(ESP8266) || defined(ESP_PLATFORM) || defined(TARGET_LIKE_MBED)
+  #if !defined(CRON_USE_LOCAL_TIME)
+    #define CRON_USE_LOCAL_TIME
+  #endif
+#endif
+
 /* function definitions */
 #ifndef CRON_USE_LOCAL_TIME
 
@@ -93,9 +99,6 @@ static time_t cron_mktime_gm(struct tm* tm) {
 #elif defined(__AVR__)
 /* https://www.nongnu.org/avr-libc/user-manual/group__avr__time.html */
     return mk_gmtime(tm);
-#elif defined(ESP8266) || defined(ESP_PLATFORM) || defined(TARGET_LIKE_MBED)
-
-#error "timegm() is not supported on the ESP platform, please use this library with CRON_USE_LOCAL_TIME"
 
 #elif defined(ANDROID) && !defined(__LP64__)
     /* https://github.com/adobe/chromium/blob/cfe5bf0b51b1f6b9fe239c2a3c2f2364da9967d7/base/os_compat_android.cc#L20 */
